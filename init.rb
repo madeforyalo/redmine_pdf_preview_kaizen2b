@@ -1,11 +1,11 @@
 require 'redmine'
 
-Redmine::Plugin.register :redmine_pdf_preview_custom do
-  name        'Redmine PDF Preview Custom'
-  author      'Tu Empresa'
+Redmine::Plugin.register :redmine_pdf_preview_kaizen2b do
+  name        'Redmine PDF Preview KaiZen"B'
+  author      'Gonzalo Rojas'
   description 'Vista previa inline de PDFs usando PDF.js'
   version     '0.1.0'
-  url         'https://tu-repo.git'
+  url         'https://github.com/madeforyalo/redmine_pdf_preview_kaizen2b.git'
 end
 
 # parcheamos AttachmentsController al iniciar
