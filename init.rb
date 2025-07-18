@@ -1,7 +1,7 @@
 require 'redmine'
 
 Redmine::Plugin.register :redmine_pdf_preview_kaizen2b do
-  name        'Redmine PDF Preview KaiZen"B'
+  name        'Redmine PDF Preview KaiZen2B'
   author      'Gonzalo Rojas'
   description 'Vista previa inline de PDFs usando PDF.js'
   version     '0.1.0'
