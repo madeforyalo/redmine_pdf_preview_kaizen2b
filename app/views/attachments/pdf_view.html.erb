@@ -4,7 +4,8 @@
 
 <div class="pdf-preview-container" style="height: 80vh;">
   <iframe
-    src="<%= asset_path('pdfjs/web/viewer.html', plugin: 'redmine_pdf_preview_kaizen2b') %>?file=<%= CGI.escape(download_named_attachment_path(@attachment, @attachment.filename)) %>"
+    src="<%= asset_path('pdfjs/web/viewer.html', plugin: 'redmine_pdf_preview_kaizen2b') %>
+         ?file=<%= CGI.escape(download_named_attachment_path(@attachment, @attachment.filename)) %>"
     width="100%" height="100%" style="border:none">
   </iframe>
 </div>
