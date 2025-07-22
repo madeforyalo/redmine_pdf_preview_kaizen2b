@@ -1,0 +1,12 @@
+pdf_attachment:
+  id: 100
+  container_id: 1
+  container_type: 'Project'
+  filename: 'sample.pdf'
+  disk_filename: 'sample.pdf'
+  filesize: 1024
+  content_type: 'application/pdf'
+  digest: 'abc123'
+  downloads: 0
+  author_id: 1
+  created_on: <%%= Time.now %%>
