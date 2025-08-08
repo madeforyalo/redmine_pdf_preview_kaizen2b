@@ -9,4 +9,16 @@ Redmine::Plugin.register :redmine_pdf_preview_kaizen2b do
   url         'https://github.com/madeforyalo/redmine_pdf_preview_kaizen2b'
   author_url  'https://kaizen2b.com'
   requires_redmine version_or_higher: '6.0.0'
+
+  settings partial: 'settings/redmine_pdf_preview_kaizen2b_settings',
+           default: {
+             'lo_bin' => '/usr/lib/libreoffice/program/soffice',
+             'lo_profile' => '/tmp/libreoffice_profile',
+             'home_override' => '/var/www',
+             'path_override' => '/usr/bin:/bin',
+             'tmpdir' => '/tmp',
+             'xdg_runtime' => '/tmp',
+             'convert_timeout' => 60,
+             'cache_dir' => 'tmp/pdf_previews'
+           }
 end

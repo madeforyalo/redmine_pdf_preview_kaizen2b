@@ -10,3 +10,16 @@ pdf_attachment:
   downloads: 0
   author_id: 1
   created_on: <%%= Time.now %%>
+
+docx_attachment:
+  id: 101
+  container_id: 1
+  container_type: 'Project'
+  filename: 'sample.docx'
+  disk_filename: 'sample.docx'
+  filesize: 1024
+  content_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  digest: 'def456'
+  downloads: 0
+  author_id: 1
+  created_on: <%%= Time.now %%>
