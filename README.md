@@ -19,26 +19,29 @@ Compatible con **Redmine 6.x (Rails 7)** y servidores Nginx/Apache sirviendo `pl
   ```bash
   sudo apt install nodejs npm
   sudo npm install -g yarn
+  
 📥 Instalación
 Copiar el plugin en la carpeta de plugins de Redmine:
-  ``bash
-   cd /srv/redmine6/plugins
-   git clone https://github.com/madeforyalo/redmine_pdf_preview_kaizen2b.git
 
+  
+  cd /srv/redmine6/plugins
+  git clone https://github.com/madeforyalo/redmine_pdf_preview_kaizen2b.git
 
 Instalar assets en public/plugin_assets:
 
-```bash
+
  cd /srv/redmine6
  sudo -u redmine bundle exec rake redmine_pdf_preview_kaizen2b:assets RAILS_ENV=production
+ 
 Reiniciar Redmine:
 
-```bash
  touch tmp/restart.txt
+
+ 
 🌐 Configuración en Nginx (ejemplo)
 En tu bloque http { ... } de /etc/nginx/nginx.conf:
 
-```bash
+bash
  include       /etc/nginx/mime.types;
  default_type  application/octet-stream;
 
@@ -48,7 +51,7 @@ En tu bloque http { ... } de /etc/nginx/nginx.conf:
  }
 En el bloque server { ... } de tu vhost:
 
-```bash
+
    location ^~ /plugin_assets/ {
       alias /srv/redmine6/public/plugin_assets/;
       expires 30d;
@@ -59,23 +62,20 @@ En el bloque server { ... } de tu vhost:
    }
 Recargar Nginx:
 
-```bash
+
    sudo nginx -t && sudo systemctl reload nginx
 🛠 Comandos disponibles
 Copiar assets PDF.js a public/plugin_assets:
 
-```bash
+
    bundle exec rake redmine_pdf_preview_kaizen2b:assets RAILS_ENV=production
    Limpiar assets instalados:
 
-bash
-Copiar
-Editar
+
+
 bundle exec rake redmine_pdf_preview_kaizen2b:clean RAILS_ENV=production
 📂 Estructura relevante del plugin
-bash
-Copiar
-Editar
+
 redmine_pdf_preview_kaizen2b/
 ├── assets/
 │   └── pdfjs/
