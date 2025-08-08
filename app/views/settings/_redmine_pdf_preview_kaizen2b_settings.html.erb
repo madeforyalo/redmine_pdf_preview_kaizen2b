@@ -1,0 +1,32 @@
+<p>
+  <label for="settings_lo_bin">LibreOffice binary</label><br />
+  <%= text_field_tag 'settings[lo_bin]', @settings['lo_bin'], size: 80 %>
+</p>
+<p>
+  <label for="settings_lo_profile">LibreOffice profile dir</label><br />
+  <%= text_field_tag 'settings[lo_profile]', @settings['lo_profile'], size: 80 %>
+</p>
+<p>
+  <label for="settings_home_override">HOME override</label><br />
+  <%= text_field_tag 'settings[home_override]', @settings['home_override'], size: 80 %>
+</p>
+<p>
+  <label for="settings_path_override">PATH override</label><br />
+  <%= text_field_tag 'settings[path_override]', @settings['path_override'], size: 80 %>
+</p>
+<p>
+  <label for="settings_tmpdir">TMPDIR</label><br />
+  <%= text_field_tag 'settings[tmpdir]', @settings['tmpdir'], size: 80 %>
+</p>
+<p>
+  <label for="settings_xdg_runtime">XDG_RUNTIME_DIR</label><br />
+  <%= text_field_tag 'settings[xdg_runtime]', @settings['xdg_runtime'], size: 80 %>
+</p>
+<p>
+  <label for="settings_convert_timeout">Conversion timeout (s)</label><br />
+  <%= number_field_tag 'settings[convert_timeout]', @settings['convert_timeout'], size: 10 %>
+</p>
+<p>
+  <label for="settings_cache_dir">Cache directory</label><br />
+  <%= text_field_tag 'settings[cache_dir]', @settings['cache_dir'], size: 80 %>
+</p>

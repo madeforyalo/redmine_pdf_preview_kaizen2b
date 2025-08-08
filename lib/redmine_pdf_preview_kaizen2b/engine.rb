@@ -3,6 +3,8 @@ module RedminePdfPreviewKaizen2b
   class Engine < ::Rails::Engine
     engine_name 'redmine_pdf_preview_kaizen2b'
 
+    config.autoload_paths << root.join('lib')
+
     initializer 'redmine_pdf_preview_kaizen2b.assets' do
       # Redmine sirve /plugin_assets/<plugin> automáticamente
     end

@@ -5,6 +5,7 @@ Compatible con **Redmine 6.x (Rails 7)** y servidores Nginx/Apache sirviendo `pl
 
 ## 📌 Características
 - Redirección automática: al abrir un adjunto `.pdf`, Redmine carga el visor PDF.js integrado.
+- Previsualización de documentos Office convirtiéndolos a PDF con LibreOffice.
 - Control de permisos: solo usuarios con acceso al adjunto pueden visualizarlo.
 - PDF.js ya incluido dentro del plugin (no requiere descarga adicional).
 - Servido de assets PDF.js desde `/plugin_assets` para mejor rendimiento.
@@ -15,6 +16,7 @@ Compatible con **Redmine 6.x (Rails 7)** y servidores Nginx/Apache sirviendo `pl
 
 ## 🚀 Requisitos
 - Redmine **>= 6.0.0** (Rails 7, Ruby 3.2.x).
+- **LibreOffice** instalado en el servidor (`/usr/lib/libreoffice/program/soffice` por defecto).
 - **Node.js** y **Yarn** instalados para gestión de assets de Redmine:
   ```bash
   sudo apt install nodejs npm
@@ -74,6 +76,29 @@ Copiar assets PDF.js a public/plugin_assets:
 
 
 bundle exec rake redmine_pdf_preview_kaizen2b:clean RAILS_ENV=production
+Limpiar caché de PDFs generados desde documentos Office:
+
+```
+bundle exec rake redmine_pdf_preview_kaizen2b:clean_cache RAILS_ENV=production
+```
+## ⚙️ Configuración
+
+En **Admin → Plugins → Redmine PDF Preview KaiZen2B → Configurar** se pueden ajustar:
+
+- `lo_bin`: ruta al binario de LibreOffice (default `/usr/lib/libreoffice/program/soffice`).
+- `lo_profile`: perfil aislado para LibreOffice (default `/tmp/libreoffice_profile`).
+- `home_override`: valor de `HOME` al ejecutar LibreOffice (default `/var/www`).
+- `path_override`: valor de `PATH` (default `/usr/bin:/bin`).
+- `tmpdir`: directorio temporal (default `/tmp`).
+- `xdg_runtime`: directorio `XDG_RUNTIME_DIR` (default `/tmp`).
+- `convert_timeout`: tiempo máximo de conversión en segundos (default `60`).
+- `cache_dir`: ubicación dentro de `Rails.root` para almacenar los PDFs generados (default `tmp/pdf_previews`).
+
+## 🧪 Uso
+
+Al abrir un adjunto de Office (`.docx`, `.xlsx`, `.pptx`, etc.), el plugin lo convierte a PDF y lo muestra con el visor PDF.js.
+Los errores de conversión se registran en `log/production.log` con detalles del comando ejecutado.
+
 📂 Estructura relevante del plugin
 
 redmine_pdf_preview_kaizen2b/
