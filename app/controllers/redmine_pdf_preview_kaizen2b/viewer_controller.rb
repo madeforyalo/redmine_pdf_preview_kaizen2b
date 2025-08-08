@@ -4,10 +4,12 @@ class RedminePdfPreviewKaizen2b::ViewerController < ApplicationController
   before_action :authorize_view!
 
   def show
+    # Importante: usar *_path para que el viewer reciba una URL del sitio, NO una ruta de filesystem
     @file_path = redmine_pdf_preview_kaizen2b_file_path(@attachment)
     render 'redmine_pdf_preview_kaizen2b/viewer/show', layout: !request.xhr?
   end
 
+  # Sirve el PDF del adjunto respetando permisos
   def file
     send_file @attachment.diskfile,
               filename: @attachment.filename,
