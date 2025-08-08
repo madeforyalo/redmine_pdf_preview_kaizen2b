@@ -1,0 +1,2 @@
+module RedminePdfPreviewKaizen2b::ViewerHelper
+end

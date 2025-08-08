@@ -1,0 +1,7 @@
+<div class="box" style="height: calc(100vh - 160px);">
+  <iframe
+    src="<%= "#{Redmine::Utils.relative_url_root}/plugin_assets/redmine_pdf_preview_kaizen2b/pdfjs/web/viewer.html?file=#{ERB::Util.url_encode(@file_path)}" %>"
+    style="border:0;width:100%;height:100%;"
+    allowfullscreen
+  ></iframe>
+</div>

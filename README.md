@@ -1,18 +1,21 @@
 # Redmine PDF Preview KaiZen2B
 
-This Redmine plugin enables inline preview of PDF attachments using [PDF.js](https://mozilla.github.io/pdf.js/).
+Vista previa inline de PDFs dentro de Redmine 6.x usando PDF.js.
 
-## Installation
-1. Place the plugin directory into your Redmine `plugins` folder, typically `REDMINE_ROOT/plugins`.
-2. Obtain a PDF.js distribution (e.g. from the [PDF.js releases](https://github.com/mozilla/pdf.js/releases)).
-3. Copy the `web` folder from the PDF.js build into `assets/pdfjs` inside this plugin so that `assets/pdfjs/web/viewer.html` exists.
-4. Restart Redmine so the plugin and assets are picked up.
+## Requisitos
+- Redmine >= 6.0 (Rails 7)
 
-## Usage
-After installation, opening a PDF attachment will display it in the PDF.js viewer instead of forcing a download. Other attachment types continue to download normally.
+## Instalación
+1. Copiar este plugin a `REDMINE_ROOT/plugins/redmine_pdf_preview_kaizen2b`.
+2. Descargar una release de **PDF.js** y copiar la carpeta `web/` a `plugins/redmine_pdf_preview_kaizen2b/assets/pdfjs/web`.
+   - Debe quedar: `plugins/redmine_pdf_preview_kaizen2b/assets/pdfjs/web/viewer.html` (y sus assets).
+3. Reiniciar Redmine (no necesita migraciones).
 
-## Notes
-- The plugin expects PDF.js assets under `assets/pdfjs/web`. These files are **not** included in the repository and must be provided manually.
+## Uso
+- Al abrir un adjunto con extensión `.pdf`, serás redirigido automáticamente al visor integrado.
 
-## Development
-Internally the plugin patches `AttachmentsController#show` and renders a custom view when the attachment filename ends in `.pdf`.
+## Seguridad
+- El acceso valida `attachment.visible?` antes de mostrar o servir el archivo.
+
+## Notas
+- Si preferís no redirigir automáticamente, podés reemplazar el patch por un hook de vista que agregue un botón "Ver PDF".
