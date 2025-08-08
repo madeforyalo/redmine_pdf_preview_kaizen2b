@@ -21,8 +21,7 @@ Compatible con **Redmine 6.x (Rails 7)** y servidores Nginx/Apache sirviendo `pl
   sudo npm install -g yarn
 📥 Instalación
 Copiar el plugin en la carpeta de plugins de Redmine:
-
-   ```bash
+  ```bash
    cd /srv/redmine6/plugins
    git clone https://github.com/madeforyalo/redmine_pdf_preview_kaizen2b.git
 
