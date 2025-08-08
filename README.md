@@ -22,64 +22,51 @@ Compatible con **Redmine 6.x (Rails 7)** y servidores Nginx/Apache sirviendo `pl
 📥 Instalación
 Copiar el plugin en la carpeta de plugins de Redmine:
 
-bash
-Copiar
-Editar
-cd /srv/redmine6/plugins
-git clone https://github.com/madeforyalo/redmine_pdf_preview_kaizen2b.git
+   ```bash
+   cd /srv/redmine6/plugins
+   git clone https://github.com/madeforyalo/redmine_pdf_preview_kaizen2b.git
+
 Instalar assets en public/plugin_assets:
 
-bash
-Copiar
-Editar
-cd /srv/redmine6
-sudo -u redmine bundle exec rake redmine_pdf_preview_kaizen2b:assets RAILS_ENV=production
+```bash
+ cd /srv/redmine6
+ sudo -u redmine bundle exec rake redmine_pdf_preview_kaizen2b:assets RAILS_ENV=production
 Reiniciar Redmine:
 
-bash
-Copiar
-Editar
-touch tmp/restart.txt
+```bash
+ touch tmp/restart.txt
 🌐 Configuración en Nginx (ejemplo)
 En tu bloque http { ... } de /etc/nginx/nginx.conf:
 
-nginx
-Copiar
-Editar
-include       /etc/nginx/mime.types;
-default_type  application/octet-stream;
+```bash
+ include       /etc/nginx/mime.types;
+ default_type  application/octet-stream;
 
-types {
-    application/javascript  mjs;
-    application/wasm        wasm;
-}
+ types {
+     application/javascript  mjs;
+     application/wasm        wasm;
+ }
 En el bloque server { ... } de tu vhost:
 
-nginx
-Copiar
-Editar
-location ^~ /plugin_assets/ {
-    alias /srv/redmine6/public/plugin_assets/;
-    expires 30d;
-    add_header Cache-Control "public, max-age=2592000";
-    add_header Accept-Ranges bytes;
-    add_header X-Content-Type-Options nosniff;
-    try_files $uri =404;
-}
+```bash
+   location ^~ /plugin_assets/ {
+      alias /srv/redmine6/public/plugin_assets/;
+      expires 30d;
+      add_header Cache-Control "public, max-age=2592000";
+      add_header Accept-Ranges bytes;
+      add_header X-Content-Type-Options nosniff;
+      try_files $uri =404;
+   }
 Recargar Nginx:
 
-bash
-Copiar
-Editar
-sudo nginx -t && sudo systemctl reload nginx
+```bash
+   sudo nginx -t && sudo systemctl reload nginx
 🛠 Comandos disponibles
 Copiar assets PDF.js a public/plugin_assets:
 
-bash
-Copiar
-Editar
-bundle exec rake redmine_pdf_preview_kaizen2b:assets RAILS_ENV=production
-Limpiar assets instalados:
+```bash
+   bundle exec rake redmine_pdf_preview_kaizen2b:assets RAILS_ENV=production
+   Limpiar assets instalados:
 
 bash
 Copiar
