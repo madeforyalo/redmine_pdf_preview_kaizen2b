@@ -8,6 +8,7 @@ module RedminePdfPreviewKaizen2b
     end
 
     config.to_prepare do
+      require_dependency 'attachments_controller'                         # <- asegura carga
       require_relative 'patches/attachments_controller_patch'
       AttachmentsController.prepend RedminePdfPreviewKaizen2b::Patches::AttachmentsControllerPatch
     end
