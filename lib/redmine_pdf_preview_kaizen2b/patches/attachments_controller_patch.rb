@@ -6,6 +6,7 @@ module RedminePdfPreviewKaizen2b
 
       def show
         Rails.logger.info "[kzn2b] attachments#show patched for id=#{params[:id]}"
+        Rails.logger.info "[kzn2b] PATCH show id=#{params[:id]} file=#{@attachment&.filename}"
         @attachment = Attachment.find(params[:id])
         return render_404 unless @attachment.visible?
 
