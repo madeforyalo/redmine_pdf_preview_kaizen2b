@@ -1,0 +1,24 @@
+<% s = Setting.plugin_redmine_pdf_preview_kaizen2b || {} %>
+<p><label>LibreOffice bin</label><br>
+  <%= text_field_tag 'settings[lo_bin]', s['lo_bin'] || '/usr/lib/libreoffice/program/soffice', size: 70 %></p>
+
+<p><label>UserInstallation (perfil)</label><br>
+  <%= text_field_tag 'settings[lo_profile]', s['lo_profile'] || '/tmp/libreoffice_profile', size: 70 %></p>
+
+<p><label>HOME override</label><br>
+  <%= text_field_tag 'settings[home_override]', s['home_override'] || '/var/www', size: 40 %></p>
+
+<p><label>PATH override</label><br>
+  <%= text_field_tag 'settings[path_override]', s['path_override'] || '/usr/bin:/bin', size: 40 %></p>
+
+<p><label>TMPDIR</label><br>
+  <%= text_field_tag 'settings[tmpdir]', s['tmpdir'] || '/tmp', size: 30 %></p>
+
+<p><label>XDG_RUNTIME_DIR</label><br>
+  <%= text_field_tag 'settings[xdg_runtime]', s['xdg_runtime'] || '/tmp', size: 30 %></p>
+
+<p><label>Timeout (s)</label><br>
+  <%= number_field_tag 'settings[convert_timeout]', (s['convert_timeout'] || 60), min: 10, max: 600 %></p>
+
+<p><label>Cache dir</label><br>
+  <%= text_field_tag 'settings[cache_dir]', s['cache_dir'] || 'tmp/pdf_previews', size: 50 %></p>
