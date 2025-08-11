@@ -5,6 +5,7 @@ module RedminePdfPreviewKaizen2b
       OFFICE_EXT = %w[.doc .docx .xls .xlsx .ppt .pptx .odt .ods .odp].freeze
 
       def show
+        Rails.logger.info "[kzn2b] attachments#show patched for id=#{params[:id]}"
         @attachment = Attachment.find(params[:id])
         return render_404 unless @attachment.visible?
 
