@@ -1,124 +1,67 @@
 # Redmine PDF Preview KaiZen2B
 
-Visor integrado de PDFs en Redmine usando **[PDF.js](https://mozilla.github.io/pdf.js/)**.  
-Compatible con **Redmine 6.x (Rails 7)** y servidores Nginx/Apache sirviendo `plugin_assets` de forma directa.
+# Redmine PDF & Office Preview KaiZen2B
 
-## 📌 Características
-- Redirección automática: al abrir un adjunto `.pdf`, Redmine carga el visor PDF.js integrado.
-- Previsualización de documentos Office convirtiéndolos a PDF con LibreOffice.
-- Control de permisos: solo usuarios con acceso al adjunto pueden visualizarlo.
-- PDF.js ya incluido dentro del plugin (no requiere descarga adicional).
-- Servido de assets PDF.js desde `/plugin_assets` para mejor rendimiento.
-- Compatible con las últimas versiones de PDF.js (`viewer.mjs`, `wasm`, etc.).
-- Incluye **Rake task** para instalar y limpiar assets de forma sencilla.
+Este plugin para [Redmine](https://www.redmine.org/) permite la **visualización en línea** de archivos **PDF** y **documentos de Office**
+(DOCX, XLSX, PPTX, etc.) directamente en el navegador.
 
----
+## Características
 
-## 🚀 Requisitos
-- Redmine **>= 6.0.0** (Rails 7, Ruby 3.2.x).
-- **LibreOffice** instalado en el servidor (`/usr/lib/libreoffice/program/soffice` por defecto).
-- **Node.js** y **Yarn** instalados para gestión de assets de Redmine:
-  ```bash
-  sudo apt install nodejs npm
-  sudo npm install -g yarn
-  
-📥 Instalación
-Copiar el plugin en la carpeta de plugins de Redmine:
+- Vista previa de **PDF** usando [PDF.js](https://mozilla.github.io/pdf.js/).
+- Conversión de documentos de Office a PDF usando **LibreOffice** en modo headless.
+- Integración directa con la página de adjuntos de Redmine.
+- Configuración flexible desde la interfaz de administración de Redmine.
+- Soporte para:
+  - Microsoft Word (.doc, .docx)
+  - Microsoft Excel (.xls, .xlsx)
+  - Microsoft PowerPoint (.ppt, .pptx)
+  - OpenDocument (.odt, .ods, .odp)
 
-  
-  cd /srv/redmine6/plugins
-  git clone https://github.com/madeforyalo/redmine_pdf_preview_kaizen2b.git
+## Requisitos
 
-Instalar assets en public/plugin_assets:
+- **Redmine** 6.0 o superior.
+- **LibreOffice** instalado en el servidor y accesible desde la línea de comandos (`soffice`).
+- Ruby 3.2+
 
+## Instalación
 
- cd /srv/redmine6
- sudo -u redmine bundle exec rake redmine_pdf_preview_kaizen2b:assets RAILS_ENV=production
- 
-Reiniciar Redmine:
+1. Clonar este repositorio dentro del directorio `plugins` de tu instalación de Redmine:
 
- touch tmp/restart.txt
+   ```bash
+   cd /ruta/a/redmine/plugins
+   git clone https://github.com/tu_usuario/redmine_pdf_preview_kaizen2b.git
+   ```
 
- 
-🌐 Configuración en Nginx (ejemplo)
-En tu bloque http { ... } de /etc/nginx/nginx.conf:
+2. Instalar dependencias:
 
-bash
- include       /etc/nginx/mime.types;
- default_type  application/octet-stream;
+   ```bash
+   cd /ruta/a/redmine
+   bundle install
+   ```
 
- types {
-     application/javascript  mjs;
-     application/wasm        wasm;
- }
-En el bloque server { ... } de tu vhost:
+3. Reiniciar Redmine:
 
+   ```bash
+   touch tmp/restart.txt
+   ```
 
-   location ^~ /plugin_assets/ {
-      alias /srv/redmine6/public/plugin_assets/;
-      expires 30d;
-      add_header Cache-Control "public, max-age=2592000";
-      add_header Accept-Ranges bytes;
-      add_header X-Content-Type-Options nosniff;
-      try_files $uri =404;
-   }
-Recargar Nginx:
+4. Configurar el plugin desde **Administración → Extensiones → Redmine PDF Preview KaiZen2B**.
 
+   - **LibreOffice bin**: Ruta al ejecutable `soffice` (ejemplo: `/usr/bin/soffice`)
+   - **UserInstallation (perfil)**: Carpeta temporal para el perfil de LibreOffice.
+   - **HOME override**, **PATH override**, **TMPDIR**, **XDG_RUNTIME_DIR**: Ajustar según entorno.
 
-   sudo nginx -t && sudo systemctl reload nginx
-🛠 Comandos disponibles
-Copiar assets PDF.js a public/plugin_assets:
+## Uso
 
+Una vez instalado y configurado, al abrir un archivo adjunto compatible se mostrará un enlace
+para **"Vista previa"**. El plugin convertirá automáticamente el documento a PDF (si es Office)
+y lo mostrará usando PDF.js.
 
-   bundle exec rake redmine_pdf_preview_kaizen2b:assets RAILS_ENV=production
-   Limpiar assets instalados:
+## Créditos
 
+- Basado en el trabajo original del plugin de vista previa PDF para Redmine.
+- Modificado y extendido por **KaiZen2B** para soportar Office.
 
+## Licencia
 
-bundle exec rake redmine_pdf_preview_kaizen2b:clean RAILS_ENV=production
-Limpiar caché de PDFs generados desde documentos Office:
-
-```
-bundle exec rake redmine_pdf_preview_kaizen2b:clean_cache RAILS_ENV=production
-```
-## ⚙️ Configuración
-
-En **Admin → Plugins → Redmine PDF Preview KaiZen2B → Configurar** se pueden ajustar:
-
-- `lo_bin`: ruta al binario de LibreOffice (default `/usr/lib/libreoffice/program/soffice`).
-- `lo_profile`: perfil aislado para LibreOffice (default `/tmp/libreoffice_profile`).
-- `home_override`: valor de `HOME` al ejecutar LibreOffice (default `/var/www`).
-- `path_override`: valor de `PATH` (default `/usr/bin:/bin`).
-- `tmpdir`: directorio temporal (default `/tmp`).
-- `xdg_runtime`: directorio `XDG_RUNTIME_DIR` (default `/tmp`).
-- `convert_timeout`: tiempo máximo de conversión en segundos (default `60`).
-- `cache_dir`: ubicación dentro de `Rails.root` para almacenar los PDFs generados (default `tmp/pdf_previews`).
-
-## 🧪 Uso
-
-Al abrir un adjunto de Office (`.docx`, `.xlsx`, `.pptx`, etc.), el plugin lo convierte a PDF y lo muestra con el visor PDF.js.
-Los errores de conversión se registran en `log/production.log` con detalles del comando ejecutado.
-
-📂 Estructura relevante del plugin
-
-redmine_pdf_preview_kaizen2b/
-├── assets/
-│   └── pdfjs/
-│       ├── web/
-│       └── build/
-├── lib/
-│   ├── patches/attachments_controller_patch.rb
-│   ├── redmine_pdf_preview_kaizen2b/
-│   │   └── engine.rb
-│   └── tasks/redmine_pdf_preview_kaizen2b_assets.rake
-├── app/
-│   ├── controllers/...
-│   └── views/...
-└── README.md
-📋 Notas
-El visor funciona en cualquier navegador moderno que soporte ES modules y WebAssembly.
-
-Probado en Redmine 6.0.6 con PDF.js incluido y Nginx 1.14+.
-
-📜 Licencia
-Este plugin sigue la misma licencia que Redmine (GPL v2).
+Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
