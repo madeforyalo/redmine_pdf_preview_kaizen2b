@@ -2,8 +2,8 @@
 require_relative 'lib/redmine_pdf_preview_kaizen2b/engine'
 
 Redmine::Plugin.register :redmine_pdf_preview_kaizen2b do
-  name        'Redmine PDF Preview KaiZen2B'
-  author      'KaiZen2B'
+  name        'Redmine PDF Preview'
+  author      'KaiZen2B - Gonzalo Rojas'
   description 'Inline PDF preview in Redmine using PDF.js + Office→PDF'
   version     '1.1.0'
   url         'https://github.com/madeforyalo/redmine_pdf_preview_kaizen2b'
