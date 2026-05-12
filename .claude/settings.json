@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del \"c:\\\\xampp\\\\htdocs\\\\redmine_pdf_preview_kaizen2b\\\\app\\\\views\\\\settings\\\\_redmine_pdf_preview_kaizen2b_settings.html.erb\")",
+      "Bash(git add *)",
+      "Bash(git push *)"
+    ]
+  }
+}

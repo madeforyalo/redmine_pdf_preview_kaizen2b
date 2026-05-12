@@ -24,6 +24,70 @@ Plugin para [Redmine](https://www.redmine.org/) que permite la **visualización 
 | Rails | 7.1 |
 | LibreOffice | 7.x (instalado en el servidor) |
 
+## Prerequisitos del servidor
+
+Estos pasos deben completarse **antes** de instalar el plugin. Se asume un servidor Debian/Ubuntu con Apache2 y Passenger.
+
+### Apache2 con mod_passenger
+
+```bash
+apt-get install -y libapache2-mod-passenger
+a2enmod passenger
+```
+
+### LibreOffice
+
+```bash
+apt-get install -y libreoffice
+```
+
+### Directorios y permisos
+
+El proceso de Redmine corre como `www-data`. Los tres directorios siguientes deben existir y pertenecerle:
+
+```bash
+# Perfil temporal de LibreOffice
+mkdir -p /tmp/libreoffice_profile
+chown www-data:www-data /tmp/libreoffice_profile
+
+# Caché de PDFs generados por el plugin
+mkdir -p /srv/redmine/tmp/pdf_previews
+chown www-data:www-data /srv/redmine/tmp/pdf_previews
+
+# Caché de dconf requerida por LibreOffice al correr como www-data
+mkdir -p /var/www/.cache/dconf
+chown www-data:www-data /var/www/.cache/dconf
+```
+
+### ImageMagick — habilitar procesamiento de PDF
+
+Editar `/etc/ImageMagick-6/policy.xml` y reemplazar la línea que restringe el coder PDF:
+
+```xml
+<policy domain="coder" rights="read|write" pattern="PDF" />
+```
+
+### Assets de PDF.js — copia manual (si rake no está disponible)
+
+Si `bundle exec rake redmine:plugins:assets` no funciona en tu entorno, copiá los assets directamente:
+
+```bash
+cp -r plugins/redmine_pdf_preview_kaizen2b/assets/pdfjs \
+      public/plugin_assets/redmine_pdf_preview_kaizen2b/
+```
+
+### Reinicio después de cambios
+
+Ante cualquier cambio en el plugin o en la configuración, reiniciar Apache y abrir una **pestaña de incógnito** para forzar que Passenger recargue la aplicación:
+
+```bash
+systemctl restart apache2
+```
+
+> La pestaña de incógnito evita que la sesión cacheada de tu navegador te muestre la versión anterior.
+
+---
+
 ## Instalación
 
 ### 1. Clonar el plugin
