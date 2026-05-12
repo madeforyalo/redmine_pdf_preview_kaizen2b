@@ -1,67 +1,156 @@
-# Redmine PDF Preview KaiZen2B
+# Redmine PDF & Office Preview — KaiZen2B
 
-# Redmine PDF & Office Preview KaiZen2B
-
-Este plugin para [Redmine](https://www.redmine.org/) permite la **visualización en línea** de archivos **PDF** y **documentos de Office**
-(DOCX, XLSX, PPTX, etc.) directamente en el navegador.
+Plugin para [Redmine](https://www.redmine.org/) que permite la **visualización en línea** de archivos **PDF** y **documentos Office** directamente en el navegador, sin necesidad de descargarlos.
 
 ## Características
 
-- Vista previa de **PDF** usando [PDF.js](https://mozilla.github.io/pdf.js/).
-- Conversión de documentos de Office a PDF usando **LibreOffice** en modo headless.
-- Integración directa con la página de adjuntos de Redmine.
-- Configuración flexible desde la interfaz de administración de Redmine.
-- Soporte para:
-  - Microsoft Word (.doc, .docx)
-  - Microsoft Excel (.xls, .xlsx)
-  - Microsoft PowerPoint (.ppt, .pptx)
-  - OpenDocument (.odt, .ods, .odp)
+- Vista previa de **PDF** usando [PDF.js](https://mozilla.github.io/pdf.js/) embebido en un iframe.
+- Conversión automática de documentos **Office → PDF** usando **LibreOffice** en modo headless, con caché para evitar reconversiones.
+- Intercepta el clic sobre cualquier adjunto compatible en Redmine — sin cambios en las vistas ni en los modelos de Redmine.
+- Compatible con **Redmine 6.x** (Rails 7.1+, Zeitwerk).
+- Formatos soportados:
+  - PDF nativo (`.pdf`)
+  - Microsoft Word (`.doc`, `.docx`)
+  - Microsoft Excel (`.xls`, `.xlsx`)
+  - Microsoft PowerPoint (`.ppt`, `.pptx`)
+  - OpenDocument (`.odt`, `.ods`, `.odp`)
 
 ## Requisitos
 
-- **Redmine** 6.0 o superior.
-- **LibreOffice** instalado en el servidor y accesible desde la línea de comandos (`soffice`).
-- Ruby 3.2+
+| Componente | Versión mínima |
+|---|---|
+| Redmine | 6.0 |
+| Ruby | 3.2 |
+| Rails | 7.1 |
+| LibreOffice | 7.x (instalado en el servidor) |
 
 ## Instalación
 
-1. Clonar este repositorio dentro del directorio `plugins` de tu instalación de Redmine:
+### 1. Clonar el plugin
 
-   ```bash
-   cd /ruta/a/redmine/plugins
-   git clone https://github.com/tu_usuario/redmine_pdf_preview_kaizen2b.git
-   ```
+```bash
+cd /ruta/a/redmine/plugins
+git clone https://github.com/madeforyalo/redmine_pdf_preview_kaizen2b.git
+```
 
-2. Instalar dependencias:
+### 2. Instalar dependencias
 
-   ```bash
-   cd /ruta/a/redmine
-   bundle install
-   ```
+```bash
+cd /ruta/a/redmine
+bundle install
+```
 
-3. Reiniciar Redmine:
+### 3. Publicar los assets de PDF.js
 
-   ```bash
-   touch tmp/restart.txt
-   ```
+Este paso es obligatorio — sin él el visor no aparece.
 
-4. Configurar el plugin desde **Administración → Extensiones → Redmine PDF Preview KaiZen2B**.
+```bash
+bundle exec rake redmine:plugins:assets RAILS_ENV=production
+```
 
-   - **LibreOffice bin**: Ruta al ejecutable `soffice` (ejemplo: `/usr/bin/soffice`)
-   - **UserInstallation (perfil)**: Carpeta temporal para el perfil de LibreOffice.
-   - **HOME override**, **PATH override**, **TMPDIR**, **XDG_RUNTIME_DIR**: Ajustar según entorno.
+Esto copia los archivos de PDF.js a `public/plugin_assets/redmine_pdf_preview_kaizen2b/`.
 
-## Uso
+### 4. Reiniciar Redmine
 
-Una vez instalado y configurado, al abrir un archivo adjunto compatible se mostrará un enlace
-para **"Vista previa"**. El plugin convertirá automáticamente el documento a PDF (si es Office)
-y lo mostrará usando PDF.js.
+```bash
+touch tmp/restart.txt
+# o bien: systemctl restart redmine (según tu entorno)
+```
+
+### 5. Configurar el plugin
+
+Ve a **Administración → Extensiones → Redmine PDF Preview KaiZen2B** y ajusta:
+
+| Parámetro | Descripción | Ejemplo |
+|---|---|---|
+| `LibreOffice binary` | Ruta al ejecutable `soffice` | `/usr/bin/libreoffice` |
+| `LibreOffice profile dir` | Carpeta de perfil temporal para LibreOffice | `/tmp/libreoffice_profile` |
+| `HOME override` | Variable `HOME` inyectada al proceso soffice | `/var/www` |
+| `PATH override` | Variable `PATH` inyectada al proceso soffice | `/usr/bin:/bin` |
+| `TMPDIR` | Directorio temporal | `/tmp` |
+| `XDG_RUNTIME_DIR` | Variable requerida por LibreOffice en Linux | `/tmp` |
+| `Conversion timeout` | Segundos máximos para la conversión | `60` |
+| `Cache directory` | Ruta relativa a la raíz de Redmine donde se guardan los PDF generados | `tmp/pdf_previews` |
+
+## Cómo funciona
+
+```
+Usuario hace clic en un adjunto
+        │
+        ▼
+AttachmentsController#show  ← patch del plugin (vía prepend)
+        │
+        ├─ extensión .pdf  ──────────────────► ViewerController#show
+        │                                             │
+        ├─ extensión Office (.docx, .xlsx…) ──► OfficeController#show
+        │                                             │ convierte con LibreOffice
+        │                                             │ guarda en caché
+        │                                             ▼
+        │                                      ViewerController#show (reusar vista)
+        │
+        └─ cualquier otro formato ──────────── comportamiento original de Redmine
+```
+
+El visor PDF carga un `<iframe>` con **PDF.js** (`viewer.html`), que a su vez solicita el binario del PDF a través de rutas protegidas por los permisos de visibilidad de Redmine (`@attachment.visible?`).
+
+## Rutas del plugin
+
+| Método | Path | Acción | Descripción |
+|---|---|---|---|
+| GET | `/pdf_preview/:id` | `viewer#show` | Muestra el visor PDF.js para un PDF nativo |
+| GET | `/pdf_preview/:id/file` | `viewer#file` | Sirve el binario del PDF (requiere permisos) |
+| GET | `/office_preview/:id` | `office#show` | Convierte Office→PDF y muestra el visor |
+| GET | `/office_preview/:id/file` | `office#file` | Sirve el PDF convertido (requiere permisos) |
+
+## Caché de conversiones
+
+Los PDFs generados se guardan en `<cache_dir>/<attachment_id>/<nombre>.pdf`. Si el archivo ya existe, se sirve directamente sin volver a lanzar LibreOffice.
+
+Para limpiar la caché manualmente:
+
+```bash
+rm -rf /ruta/a/redmine/tmp/pdf_previews/
+```
+
+## Estructura del plugin
+
+```
+redmine_pdf_preview_kaizen2b/
+├── app/
+│   ├── controllers/
+│   │   └── redmine_pdf_preview_kaizen2b/
+│   │       ├── viewer_controller.rb   # Sirve PDFs nativos
+│   │       └── office_controller.rb  # Convierte Office y sirve el resultado
+│   └── views/
+│       ├── redmine_pdf_preview_kaizen2b/viewer/show.html.erb  # Iframe PDF.js
+│       └── settings/_redmine_pdf_preview_kaizen2b.html.erb   # Formulario de config
+├── assets/
+│   └── pdfjs/                         # PDF.js embebido (viewer.html + worker)
+├── config/
+│   └── routes.rb
+├── lib/
+│   └── redmine_pdf_preview_kaizen2b/
+│       ├── engine.rb                  # Aplica el patch vía config.to_prepare
+│       ├── patches/
+│       │   └── attachments_controller_patch.rb  # Intercepta show por extensión
+│       └── services/
+│           └── office_to_pdf.rb       # Lógica de conversión con LibreOffice
+└── init.rb                            # Registro del plugin en Redmine
+```
+
+## Cambios respecto a versiones anteriores
+
+### v1.1.0 — Compatibilidad con Redmine 6.x / Rails 7.1+
+
+- **Eliminado `require_dependency`**: Esta llamada fue removida en Rails 7.1. El engine ahora usa `require` con ruta absoluta dentro de `config.to_prepare`.
+- **Patch aplicado una sola vez**: Se eliminaron los bloques redundantes en `init.rb` (`Rails.configuration.to_prepare` y `after_initialize`). El engine es el único responsable de aplicar el patch.
+- **`OfficeController` corregido**: El archivo tenía la clase definida dos veces, lo que causaba comportamiento indefinido en Ruby. Quedó una sola definición limpia.
+- **Partial de settings unificado**: Existían dos partials con contenido similar (`_redmine_pdf_preview_kaizen2b.html.erb` y `_redmine_pdf_preview_kaizen2b_settings.html.erb`). Se eliminó el duplicado; Redmine carga únicamente el indicado en `init.rb`.
 
 ## Créditos
 
-- Basado en el trabajo original del plugin de vista previa PDF para Redmine.
-- Modificado y extendido por **KaiZen2B** para soportar Office.
+Desarrollado por **KaiZen2B — Gonzalo Rojas** ([kaizen2b.com](https://kaizen2b.com)).
 
 ## Licencia
 
-Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+MIT. Consulta el archivo `LICENSE` para más detalles.
